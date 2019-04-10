@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hd.dao.CustomerMapper">
+
+
+
+    <select id="selectRoleName" resultType="String" parameterType="String">
+        SELECT auth_role.`name` from auth_role
+        INNER JOIN auth_customer_role on auth_role.id = auth_customer_role.role_id
+        where auth_customer_role.customer_id = #{customerId}
+    </select>
+
+    <select id="selectCustomerList" resultType="Customer">
+        select * from auth_customer
+        <where>
+            <if test="name != null and name != '' ">
+                name = #{name}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllCustomerRole" resultType="com.hd.entity.Customer" parameterType="String">
+        select auth_customer.* from auth_customer
+        INNER JOIN auth_customer_role on auth_customer.id = auth_customer_role.customer_id
+        INNER JOIN auth_role on auth_customer_role.role_id = auth_role.id
+        where auth_role.`name` = #{name}
+    </select>
+
+    <!-->
+    添加的sql
+    -->
+    <insert id="insertCustomer" keyProperty="id">
+        insert into auth_customer values(default,#{name},#{sex},#{email},#{channel},#{industry},#{phone},#{address},now());
+    </insert>
+    <!-->
+    删除的sql
+    -->
+    <delete id="deleteCustomer" parameterType="String">
+        delete from auth_customer where id = #{id}
+    </delete>
+    <!-->
+    修改的sql
+    -->
+    <update id="updateCustomer">
+        update auth_customer set name = #{name}, channel = #{channel},industry = #{industry},phone = #{phone},address = #{address}
+        where id = #{id}
+    </update>
+
+    <select id="selectHealthCustomer" resultType="com.hd.entity.Customer" parameterType="String">
+        select * from auth_customer
+        <where>
+            <if test="name != null and name != '' ">
+                name = #{name}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCustomerId" parameterType="String" resultType="String">
+        select id from auth_customer where name = #{name}
+    </select>
+
+    <select id="selectAllCustomer" resultType="com.hd.entity.Customer">
+        select * from auth_customer
+    </select>
+
+    <select id="selectCustomerEmail" parameterType="String" resultType="String">
+        select email from auth_customer where name = #{customerName}
+    </select>
+
+    <select id="selectCustomerEmailList" resultType="String">
+        select name from auth_customer
+    </select>
+
+</mapper>

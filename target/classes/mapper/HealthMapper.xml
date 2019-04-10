@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hd.dao.HealthMapper">
+
+    <delete id="deleteHealthAndCustomer" parameterType="String">
+        delete from health where customer_id = #{id}
+    </delete>
+
+    <select id="selectHealthList" parameterType="String" resultType="com.hd.entity.Health">
+        select id,customer_id as customerId,heart_rate as heartRate ,diastolic_pressure as diastolicPressure ,
+        systolic_pressure as systolicPressure,cholesterol,bloodsugar,weight,height,waistline,createtime
+        from auth_health
+        <where>
+            <if test="id != null and id != '' ">
+                customer_id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <insert id="addHealth" keyProperty="id">
+        insert into auth_health values(default,#{customerId},#{heartRate},#{diastolicPressure},#{systolicPressure},#{cholesterol},#{bloodsugar},#{weight},#{height},#{waistline},now());
+    </insert>
+
+    <update id="modifyHealth" >
+        update auth_health set heart_rate=#{heartRate},cholesterol=#{cholesterol},bloodsugar=#{bloodsugar}
+        where id = #{healthId}
+    </update>
+
+    <select id="selectCustomerId" resultType="com.hd.entity.Health" parameterType="String">
+        select * from auth_health WHERE customer_id = #{id}
+    </select>
+
+</mapper>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hd.dao.UserMapper">
+
+    <select id="adminPower" parameterType="String" resultType="String">
+        select auth_role.`name` from auth_role
+        INNER JOIN auth_user_role on auth_role.id = auth_user_role.role_id
+        INNER JOIN auth_user on auth_user.id = auth_user_role.user_id
+        where auth_user.id = #{userId}
+    </select>
+
+    <!-->
+        这个是登陆的sql
+    -->
+    <select id="login" parameterType="String" resultType="com.hd.entity.User">
+        select * from auth_user
+        where account = #{account} and pwd = #{pwd}
+    </select>
+    <!-->
+    查询所有的角色名字
+    -->
+    <select id="selectAllRole" resultType="String">
+        select name from auth_role
+    </select>
+
+    <delete id="deleteRoleId">
+        delete from auth_customer_role where customer_id = #{id}
+    </delete>
+
+    <select id="selectRoleName" parameterType="String" resultType="String">
+        select name from auth_role where id = #{id}
+    </select>
+
+    <select id="selectRoleId" resultType="String" parameterType="String">
+        select id from auth_role where name = #{name}
+    </select>
+
+    <select id="selectCustomerNewId" resultType="String">
+        select id from auth_customer
+        ORDER BY createtime desc LIMIT 1
+    </select>
+
+    <insert id="insertCustomerAndRole" keyProperty="id">
+        insert into auth_customer_role values(default,#{roleId},#{customerId});
+    </insert>
+
+    <update id="modifyRoleId" parameterType="String">
+        update auth_customer_role set role_id = #{roleId}
+        where customer_id = #{customerId}
+    </update>
+
+    <select id="selectAdminList" resultType="com.hd.entity.po.AdminListPo" parameterType="String">
+        select auth_user.id,auth_user.`name`,auth_user.account,auth_user.phone,auth_user.address,auth_role.`name` as roleName,auth_user.createdate from auth_user
+        INNER JOIN auth_user_role on auth_user.id = auth_user_role.user_id
+        INNER JOIN auth_role on auth_role.id = auth_user_role.role_id
+        <where>
+            <if test="adminName != null and adminName != '' ">
+                auth_user.`name` = #{adminName}
+            </if>
+        </where>
+    </select>
+
+    <update id="modifyAdmin">
+        update auth_user set name = #{name},account = #{account},phone = #{phone},address = #{address}
+        where id = #{id}
+    </update>
+
+    <update id="modifyAdminRole">
+        update auth_user_role set role_id = #{roleId}
+        where user_id = #{userId}
+    </update>
+
+    <insert id="addAdmin" keyProperty="id">
+        insert into auth_user values(default,#{name},#{account},#{pwd},#{phone},#{address},now());
+    </insert>
+
+    <insert id="addAdminRole" keyProperty="id">
+        insert into auth_user_role values(default,#{roleId},#{userId});
+    </insert>
+
+    <delete id="deleteAdmin" parameterType="String">
+        delete from auth_user where id = #{id}
+    </delete>
+
+    <delete id="deleteAdminRole" parameterType="String">
+        delete from auth_user_role where user_id = #{userId}
+    </delete>
+
+    <select id="selectAdminNewId" resultType="String">
+        select id from auth_user
+        ORDER BY createdate desc LIMIT 1
+    </select>
+
+    <select id="selectPassword" parameterType="String" resultType="String">
+        select pwd from auth_user
+        where id = #{userId}
+    </select>
+
+    <update id="updatePassword" parameterType="String">
+        update auth_user set pwd = #{password}
+        where id = #{userId}
+    </update>
+
+</mapper>
